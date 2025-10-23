@@ -55,7 +55,7 @@ const handleDelete = async () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
           <DropdownMenuItem
             onClick={() => window.location.href = `/dashboard/products/${product.id}`}
             className="cursor-pointer"

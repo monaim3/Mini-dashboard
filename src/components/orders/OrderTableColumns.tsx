@@ -129,6 +129,7 @@ export const orderColumns: ColumnDef<Order>[] = [
   },
   {
     id: 'actions',
+    header:"Actions",
     cell: ({ row }) => {
       const order = row.original;
       return <OrderActions order={order} />;

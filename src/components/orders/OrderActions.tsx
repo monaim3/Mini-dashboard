@@ -55,7 +55,6 @@ export function OrderActions({ order }: OrderActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link href={`/dashboard/orders/${order.id}`}>
               <Eye className="mr-2 h-4 w-4" />
