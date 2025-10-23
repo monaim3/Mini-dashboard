@@ -48,10 +48,9 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           {/* Header */}
           <div className="flex items-center justify-between h-16 px-6 border-b">
             <Link href="/dashboard" className="flex items-center space-x-2" onClick={onClose}>
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Package className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold">Dashboard</span>
+                     <span className="text-xl font-bold bg-gradient-to-r from-[#f1765b] to-[#f1638c] bg-clip-text text-transparent">
+                    Dashboard
+                  </span>
             </Link>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="h-6 w-6" />

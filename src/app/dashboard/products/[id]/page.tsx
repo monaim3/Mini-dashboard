@@ -1,5 +1,4 @@
 'use client';
-import { use } from 'react';
 import { ProductForm } from '@/components/products/ProductForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -16,7 +15,7 @@ interface ProductEditPageProps {
 }
 
 export default function ProductEditPage({ params }: ProductEditPageProps) {
-    const { id } = use(params);
+    const id = params.id
   const { data: product, isLoading, error } = useProduct(id);
 
   console.log('Product ID from params:', id);
