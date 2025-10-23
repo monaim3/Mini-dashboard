@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Package, ShoppingCart, LayoutDashboard } from "lucide-react";
+import Image from "next/image";
 
 const navItems = [
   {
@@ -31,15 +32,17 @@ export function Sidebar() {
       <div className="flex flex-col flex-1 min-h-0">
         {/* Logo */}
         <div className="flex items-center h-16 flex-shrink-0 px-6 border-b">
-          <Link href="/dashboard" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Package className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold">Dashboard</span>
+          <Link href="/dashboard" className="flex items-center ">
+            {/* <div className="w-24 h-24 flex items-center justify-center">
+          
+              <Image src="https://i.ibb.co.com/cSXCsRyc/Gemini-Generated-Image-8r951b8r951b8r95.png" alt="Logo" width={100} height={100} />
+            </div> */}
+          <span className="text-xl font-bold bg-gradient-to-r from-[#f1765b] to-[#f1638c] bg-clip-text text-transparent">
+  Dashboard
+</span>
           </Link>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -63,7 +66,6 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Footer */}
         <div className="flex-shrink-0 p-4 border-t">
           <div className="text-xs text-muted-foreground text-center">
             © 2025 Dashboard

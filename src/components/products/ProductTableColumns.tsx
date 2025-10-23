@@ -32,6 +32,29 @@ export const productColumns: ColumnDef<Product>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+{
+  accessorKey: 'image',
+  header: 'Image',
+  cell: ({ row }) => {
+    const imageUrl = row.getValue('image') as string | null;
+    return imageUrl ? (
+      <img
+        src={imageUrl}
+        alt="Product Image"
+        className="w-10 h-10 rounded-lg object-cover"
+      />
+    ) : (
+      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+        <img
+          src="https://i.ibb.co/KzXYFX2n/elementor-placeholder-image.png"
+          alt="No Image"
+          className="w-6 h-6"
+        />
+      </div>
+    );
+  }, 
+},
+
   {
     accessorKey: 'name',
     header: 'Product Name',
@@ -39,16 +62,9 @@ export const productColumns: ColumnDef<Product>[] = [
       const product = row.original;
       return (
         <div className="flex items-center space-x-3">
-          {product.image && (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-10 h-10 rounded-lg object-cover"
-            />
-          )}
           <div>
             <div className="font-medium text-gray-900">{product.name}</div>
-            <div className="text-sm text-gray-500">{product.sku}</div>
+            {/* <div className="text-sm text-gray-500">{product.sku}</div> */}
           </div>
         </div>
       );

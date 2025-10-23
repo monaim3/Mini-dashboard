@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Product } from '@/types/product';
+import { Order } from '@/types/order';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,10 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Edit, MoreHorizontal, Trash2 } from 'lucide-react';
-import { useDeleteProduct } from '@/hooks/useProducts';
-import { toast } from "sonner"
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,26 +21,30 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Edit, MoreHorizontal, Trash2, Eye } from 'lucide-react';
+import { useDeleteOrder } from '@/hooks/useOrders';
+import { toast } from 'sonner';
+import Link from 'next/link';
 
-interface ProductActionsProps {
-  product: Product;
+interface OrderActionsProps {
+  order: Order;
 }
 
-export function ProductActions({ product }: ProductActionsProps) {
+export function OrderActions({ order }: OrderActionsProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const deleteMutation = useDeleteProduct();
+  const deleteMutation = useDeleteOrder();
 
+  const handleDelete = async () => {
+    try {
+      await deleteMutation.mutateAsync(order.id);
+      toast.success('Order deleted successfully!');
+    } catch (error) {
+      toast.error('Failed to delete order. Please try again.');
+    } finally {
+      setShowDeleteDialog(false);
+    }
+  };
 
-const handleDelete = async () => {
-  try {
-    await deleteMutation.mutateAsync(product.id);
-    toast.success(`"${product.name}" has been deleted successfully.`,);
-  } catch (error) {
-    toast.error("Failed to delete product. Please try again.");
-  } finally {
-    setShowDeleteDialog(false);
-  }
-};
   return (
     <>
       <DropdownMenu>
@@ -56,12 +56,17 @@ const handleDelete = async () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => window.location.href = `/dashboard/products/${product.id}`}
-            className="cursor-pointer"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={`/dashboard/orders/${order.id}`}>
+              <Eye className="mr-2 h-4 w-4" />
+              View Details
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={`/dashboard/orders/${order.id}`}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -79,8 +84,8 @@ const handleDelete = async () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the product
-              "{product.name}" and remove its data from our servers.
+              This action cannot be undone. This will permanently delete the order
+              "{order.orderId}" and remove its data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

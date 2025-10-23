@@ -15,7 +15,8 @@ export interface Product {
     totalSales: number;
   };
   deliveryProgress?: number;
-  clientSatisfaction?: number; // 1-5 rating
+  clientSatisfaction?: number;
 }
 
-export type ProductFormData = Omit<Product, 'id' | 'createdAt' | 'updatedAt'>;
+// For form operations, we don't include the analytics data
+export type ProductFormData = Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'salesData' | 'deliveryProgress' | 'clientSatisfaction'>;

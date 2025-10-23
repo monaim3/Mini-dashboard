@@ -32,20 +32,15 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           <span className="sr-only">Toggle menu</span>
         </Button>
 
-        {/* Page title - hidden on mobile */}
         <div className="hidden md:block">
           <h1 className="text-lg font-semibold">Product & Order Management</h1>
         </div>
 
-        {/* Mobile logo */}
         <div className="md:hidden font-bold">Dashboard</div>
 
-        {/* Right side actions */}
         <div className="flex items-center gap-2">
-          {/* Theme toggle */}
           <ThemeToggle />
 
-          {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -60,9 +55,9 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">John Doe</p>
+                  <p className="text-sm font-medium leading-none">Test User</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    john@example.com
+                    test@example.com
                   </p>
                 </div>
               </DropdownMenuLabel>
