@@ -1,115 +1,86 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Product } from '@/types/product';
-import { 
-  getProducts, 
-  getProductById, 
-  createProduct, 
-  updateProduct, 
-  deleteProduct,
-  isProductNameUnique,
-  isSKUUnique
-} from '@/lib/mockData';
-import { useToast } from '@/components/ui/use-toast';
+import { Product, ProductFormData } from '@/types/product';
+import { mockProducts } from '@/lib/mockData';
 
-// Get all products
+// Add this function to manage products in local storage or state
+let productsData = [...mockProducts];
+
 export function useProducts() {
   return useQuery({
     queryKey: ['products'],
-    queryFn: getProducts,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: async (): Promise<Product[]> => {
+      // Try to get from localStorage first, then fallback to mock data
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('products');
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      }
+      return productsData;
+    },
   });
 }
 
-// Get single product
-export function useProduct(id: string) {
-  return useQuery({
-    queryKey: ['product', id],
-    queryFn: () => getProductById(id),
-    enabled: !!id,
-  });
-}
-
-// Create product
 export function useCreateProduct() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => createProduct(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast({
-        title: 'Success!',
-        description: 'Product created successfully.',
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to create product.',
-        variant: 'destructive',
-      });
-    },
-  });
-}
+    mutationFn: async (productData: ProductFormData): Promise<Product> => {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newProduct: Product = {
+        id: Date.now().toString(),
+        ...productData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        // Add mock data for the indicators
+        salesData: {
+          last7Days: [Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50)],
+          totalSales: Math.floor(Math.random() * 200)
+        },
+        deliveryProgress: Math.floor(Math.random() * 100),
+        clientSatisfaction: Math.floor(Math.random() * 5) + 1
+      };
 
-// Update product
-export function useUpdateProduct() {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<Product> }) => 
-      updateProduct(id, updates),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      if (data) {
-        queryClient.invalidateQueries({ queryKey: ['product', data.id] });
+      // Update local storage
+      if (typeof window !== 'undefined') {
+        const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        const updatedProducts = [...existingProducts, newProduct];
+        localStorage.setItem('products', JSON.stringify(updatedProducts));
+      } else {
+        productsData.push(newProduct);
       }
-      toast({
-        title: 'Success!',
-        description: 'Product updated successfully.',
-      });
+
+      return newProduct;
     },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to update product.',
-        variant: 'destructive',
-      });
+    onSuccess: () => {
+      // Invalidate and refetch products query
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
   });
 }
 
-// Delete product
 export function useDeleteProduct() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (id: string) => deleteProduct(id),
+    mutationFn: async (productId: string) => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Update local storage
+      if (typeof window !== 'undefined') {
+        const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        const updatedProducts = existingProducts.filter((p: Product) => p.id !== productId);
+        localStorage.setItem('products', JSON.stringify(updatedProducts));
+      } else {
+        productsData = productsData.filter(p => p.id !== productId);
+      }
+      
+      return productId;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast({
-        title: 'Success!',
-        description: 'Product deleted successfully.',
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to delete product.',
-        variant: 'destructive',
-      });
     },
   });
-}
-
-// Validation hooks
-export async function validateProductName(name: string, excludeId?: string): Promise<boolean> {
-  return isProductNameUnique(name, excludeId);
-}
-
-export async function validateSKU(sku: string, excludeId?: string): Promise<boolean> {
-  return isSKUUnique(sku, excludeId);
 }

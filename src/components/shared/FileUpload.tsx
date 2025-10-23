@@ -8,15 +8,10 @@ import { Card, CardContent } from '@/components/ui/card';
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void;
-  accept?: string;
-  maxSize?: number;
+  value?: string;
 }
 
-export function FileUpload({ 
-  onFileUpload, 
-  accept = 'image/*',
-  maxSize = 5242880 // 5MB
-}: FileUploadProps) {
+export function FileUpload({ onFileUpload, value }: FileUploadProps) {
   const [file, setFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -31,9 +26,7 @@ export function FileUpload({
     onDrop,
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
-    },
-    maxSize,
-    multiple: false,
+    }
   });
 
   const removeFile = () => {
