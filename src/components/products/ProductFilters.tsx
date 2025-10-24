@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -54,9 +55,9 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
   const hasActiveFilters = search !== '' || category !== 'all' || status !== 'all' || priceRange[0] > 0 || priceRange[1] < 1000;
 
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-white">
+    <div className="space-y-4 p-4 border rounded-lg bg-white dark:bg-gray-900 dark:border-gray-700">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center">
+        <h3 className="text-lg font-semibold flex items-center text-gray-900 dark:text-gray-100">
           <Filter className="w-5 h-5 mr-2" />
           Filters
         </h3>
@@ -70,9 +71,9 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Search</label>
+          <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Search</label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
             <Input
               placeholder="Search products..."
               value={search}
@@ -83,7 +84,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Category</label>
+          <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Category</label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger>
               <SelectValue placeholder="All categories" />
@@ -99,7 +100,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Status</label>
+          <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Status</label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger>
               <SelectValue placeholder="All status" />
@@ -113,7 +114,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">
+          <label className="text-sm font-medium text-gray-900 dark:text-gray-100">
             Price Range: ${priceRange[0]} - ${priceRange[1]}
           </label>
           <Slider
