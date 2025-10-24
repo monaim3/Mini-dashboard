@@ -118,7 +118,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
           </label>
           <Slider
             value={priceRange}
-            onValueChange={setPriceRange}
+            onValueChange={(value) => setPriceRange(value as [number, number])}
             max={1000}
             step={10}
             className="mt-2"

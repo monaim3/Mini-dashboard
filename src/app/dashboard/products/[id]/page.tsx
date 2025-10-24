@@ -6,16 +6,18 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { useProduct } from '@/hooks/useProducts';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-
+import { use } from 'react';
 
 interface ProductEditPageProps {
-  params: {
+  params: Promise<{
     id: string;  
-  };
+  }>;
 }
 
 export default function ProductEditPage({ params }: ProductEditPageProps) {
-    const id = params.id
+
+  const { id } = use(params);
+  
   const { data: product, isLoading, error } = useProduct(id);
 
   console.log('Product ID from params:', id);
