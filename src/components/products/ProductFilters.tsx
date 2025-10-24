@@ -126,7 +126,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
         </div>
       </div>
 
-      <Button onClick={handleFilterChange} className="bg-[#f1765b] hover:bg-[#e0654a]">
+      <Button onClick={handleFilterChange} className="bg-gradient-to-r from-[#f1765b] to-[#f1638c] hover:bg-[#e0654a]">
         Apply Filters
       </Button>
     </div>

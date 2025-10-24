@@ -26,7 +26,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronLeft, ChevronRight, Columns } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Columns, Package } from 'lucide-react';
 import { ProductFilters } from './ProductFilters';
 
 interface ProductTableProps {
@@ -64,7 +64,6 @@ export function ProductTable({ data, columns }: ProductTableProps) {
 
   const handleFilterChange = (newFilters: typeof filters) => {
     setFilters(newFilters);
-    // Apply filters to the table
     setGlobalFilter(newFilters.search);
   };
 
@@ -72,16 +71,20 @@ export function ProductTable({ data, columns }: ProductTableProps) {
     <div className="space-y-4">
       <ProductFilters onFilterChange={handleFilterChange} />
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#f1765b]/5 to-[#f1638c]/5 rounded-lg border">
+        <div className="flex items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="hover:border-[#f1765b]/50 hover:text-[#f1765b] transition-colors"
+              >
                 <Columns className="w-4 h-4 mr-2" />
                 Columns
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-48">
               {table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
@@ -103,25 +106,26 @@ export function ProductTable({ data, columns }: ProductTableProps) {
           </DropdownMenu>
 
           {Object.keys(rowSelection).length > 0 && (
-            <div className="text-sm text-gray-600">
-              {Object.keys(rowSelection).length} row(s) selected
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-[#f1765b] to-[#f1638c] text-white text-sm font-medium">
+              <Package className="w-3.5 h-3.5" />
+              {Object.keys(rowSelection).length} selected
             </div>
           )}
         </div>
 
-        <div className="text-sm text-gray-600">
-          Total: {data.length} products
+        <div className="text-sm font-medium text-muted-foreground">
+          Total: <span className="text-foreground font-semibold">{data.length}</span> products
         </div>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-lg border overflow-hidden bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-gradient-to-r from-[#f1765b]/5 to-[#f1638c]/5 hover:from-[#f1765b]/10 hover:to-[#f1638c]/10">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="font-semibold">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -140,6 +144,7 @@ export function ProductTable({ data, columns }: ProductTableProps) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-gradient-to-r hover:from-[#f1765b]/5 hover:to-[#f1638c]/5 transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -155,9 +160,14 @@ export function ProductTable({ data, columns }: ProductTableProps) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-32 text-center"
                 >
-                  No products found.
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#f1765b]/10 to-[#f1638c]/10 flex items-center justify-center">
+                      <Package className="w-6 h-6 text-[#f1765b]" />
+                    </div>
+                    <p className="text-muted-foreground">No products found.</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
@@ -166,17 +176,18 @@ export function ProductTable({ data, columns }: ProductTableProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-600">
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#f1765b]/5 to-[#f1638c]/5 rounded-lg border">
+        <div className="text-sm font-medium text-muted-foreground">
+          Page <span className="text-foreground font-semibold">{table.getState().pagination.pageIndex + 1}</span> of{' '}
+          <span className="text-foreground font-semibold">{table.getPageCount()}</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="hover:border-[#f1765b]/50 hover:text-[#f1765b] disabled:opacity-50 transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -185,6 +196,7 @@ export function ProductTable({ data, columns }: ProductTableProps) {
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="hover:border-[#f1638c]/50 hover:text-[#f1638c] disabled:opacity-50 transition-colors"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>

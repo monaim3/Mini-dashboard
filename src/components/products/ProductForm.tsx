@@ -1,6 +1,6 @@
 // 'use client';
 
-// import { useState } from 'react';
+// import { useState, useEffect } from 'react';
 // import { useForm } from 'react-hook-form';
 // import { zodResolver } from '@hookform/resolvers/zod';
 // import { useRouter } from 'next/navigation';
@@ -14,18 +14,28 @@
 // import { productSchema, ProductFormValues } from '@/schemas/productSchema';
 // import { FileUpload } from '../shared/FileUpload';
 // import { toast } from "sonner"
-// import { useCreateProduct } from '@/hooks/useProducts';
+// import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts';
+// import { Product } from '@/types/product';
 
 // const CATEGORIES = ['Electronics', 'Furniture', 'Clothing', 'Books', 'Sports', 'Beauty'];
 
-// export function ProductForm() {
+// interface ProductFormProps {
+//   mode: 'create' | 'edit';
+//   product?: Product;
+// }
+
+// export function ProductForm({ mode, product }: ProductFormProps) {
 //     const [currentStep, setCurrentStep] = useState(0);
 //     const [imagePreview, setImagePreview] = useState<string>('');
 //     const router = useRouter();
 //     const createProductMutation = useCreateProduct();
+//     const updateProductMutation = useUpdateProduct();
+
+//     const isEdit = mode === 'edit';
+//     const isSubmitting = isEdit ? updateProductMutation.isPending : createProductMutation.isPending;
 
 //     const form = useForm<ProductFormValues>({
-//          resolver: zodResolver(productSchema) as any,
+//         resolver: zodResolver(productSchema) as any,
 //         defaultValues: {
 //             name: '',
 //             sku: '',
@@ -37,6 +47,25 @@
 //             isActive: true,
 //         },
 //     });
+
+//     // Set form values when in edit mode
+//     useEffect(() => {
+//         if (isEdit && product) {
+//             form.reset({
+//                 name: product.name,
+//                 sku: product.sku,
+//                 category: product.category,
+//                 price: product.price,
+//                 stockQuantity: product.stockQuantity,
+//                 description: product.description || '',
+//                 image: product.image || '',
+//                 isActive: product.isActive,
+//             });
+//             if (product.image) {
+//                 setImagePreview(product.image);
+//             }
+//         }
+//     }, [isEdit, product, form]);
 
 //     const steps = [
 //         { title: 'Basic Info', description: 'Product basic information', fields: ['name', 'sku', 'category'] },
@@ -56,21 +85,38 @@
 
 //     const onSubmit = async (data: ProductFormValues) => {
 //         try {
-//             await createProductMutation.mutateAsync(data);
+//             if (isEdit && product) {
+//                 // Update existing product
+//                 await updateProductMutation.mutateAsync({
+//                     id: product.id,
+//                     ...data
+//                 });
 
-//             toast.success('Product created successfully!', {
-//                 description: 'Your product has been added to the catalog.',
-//                 action: {
-//                     label: 'View Products',
-//                     onClick: () => router.push('/dashboard/products'),
-//                 },
-//             });
+//                 toast.success('Product updated successfully!', {
+//                     description: 'Your product has been updated.',
+//                     action: {
+//                         label: 'View Products',
+//                         onClick: () => router.push('/dashboard/products'),
+//                     },
+//                 });
+//             } else {
+//                 // Create new product
+//                 await createProductMutation.mutateAsync(data);
+
+//                 toast.success('Product created successfully!', {
+//                     description: 'Your product has been added to the catalog.',
+//                     action: {
+//                         label: 'View Products',
+//                         onClick: () => router.push('/dashboard/products'),
+//                     },
+//                 });
+//             }
 
 //             form.reset();
 //             setImagePreview('');
 //             router.push('/dashboard/products');
 //         } catch (error) {
-//             toast.error('Failed to create product', {
+//             toast.error(`Failed to ${isEdit ? 'update' : 'create'} product`, {
 //                 description: 'Please check your connection and try again.',
 //             });
 //         }
@@ -143,9 +189,14 @@
 
 //             <Card>
 //                 <CardHeader>
-//                     <CardTitle>Create New Product</CardTitle>
+//                     <CardTitle>
+//                         {isEdit ? 'Edit Product' : 'Create New Product'}
+//                     </CardTitle>
 //                     <CardDescription>
-//                         Fill in the product details. All fields marked with * are required.
+//                         {isEdit 
+//                             ? 'Update the product details below.'
+//                             : 'Fill in the product details. All fields marked with * are required.'
+//                         }
 //                     </CardDescription>
 //                 </CardHeader>
 //                 <CardContent>
@@ -182,10 +233,11 @@
 //                                                         placeholder="Enter SKU"
 //                                                         {...field}
 //                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+//                                                         disabled={isEdit} // Disable SKU editing in edit mode
 //                                                     />
 //                                                 </FormControl>
 //                                                 <FormDescription>
-//                                                     Stock Keeping Unit (will be converted to uppercase)
+//                                                     Stock Keeping Unit {isEdit && '(Cannot be changed)'}
 //                                                 </FormDescription>
 //                                                 <FormMessage />
 //                                             </FormItem>
@@ -361,9 +413,12 @@
 //                                 ) : (
 //                                     <Button 
 //                                         type="submit" 
-//                                         disabled={createProductMutation.isPending}
+//                                         disabled={isSubmitting}
 //                                     >
-//                                         {createProductMutation.isPending ? 'Creating...' : 'Create Product'}
+//                                         {isSubmitting 
+//                                             ? (isEdit ? 'Updating...' : 'Creating...') 
+//                                             : (isEdit ? 'Update Product' : 'Create Product')
+//                                         }
 //                                     </Button>
 //                                 )}
 //                             </div>
@@ -394,6 +449,7 @@ import { FileUpload } from '../shared/FileUpload';
 import { toast } from "sonner"
 import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts';
 import { Product } from '@/types/product';
+import { Check } from 'lucide-react';
 
 const CATEGORIES = ['Electronics', 'Furniture', 'Clothing', 'Books', 'Sports', 'Beauty'];
 
@@ -534,40 +590,51 @@ export function ProductForm({ mode, product }: ProductFormProps) {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             {/* Progress Steps */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between bg-card border rounded-lg p-6">
                 {steps.map((step, index) => (
-                    <div key={step.title} className="flex items-center">
-                        <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                                index <= currentStep
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted text-muted-foreground'
-                            }`}
-                        >
-                            {index + 1}
-                        </div>
-                        <div className="ml-2">
-                            <p className={`text-sm font-medium ${
-                                index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
-                            }`}>
-                                {step.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground">{step.description}</p>
+                    <div key={step.title} className="flex items-center flex-1">
+                        <div className="flex items-center">
+                            <div
+                                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
+                                    index < currentStep
+                                        ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c] text-white shadow-md'
+                                        : index === currentStep
+                                        ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c] text-white shadow-lg scale-110'
+                                        : 'bg-muted text-muted-foreground'
+                                }`}
+                            >
+                                {index < currentStep ? <Check className="w-5 h-5" /> : index + 1}
+                            </div>
+                            <div className="ml-3">
+                                <p className={`text-sm font-semibold ${
+                                    index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
+                                }`}>
+                                    {step.title}
+                                </p>
+                                <p className="text-xs text-muted-foreground">{step.description}</p>
+                            </div>
                         </div>
                         {index < steps.length - 1 && (
-                            <div
-                                className={`w-12 h-0.5 mx-4 ${
-                                    index < currentStep ? 'bg-primary' : 'bg-muted'
-                                }`}
-                            />
+                            <div className="flex-1 mx-4">
+                                <div
+                                    className={`h-1 rounded-full transition-all duration-300 ${
+                                        index < currentStep 
+                                            ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c]' 
+                                            : 'bg-muted'
+                                    }`}
+                                />
+                            </div>
                         )}
                     </div>
                 ))}
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>
+            <Card className="shadow-md">
+                <CardHeader className="bg-gradient-to-r from-[#f1765b]/5 to-[#f1638c]/5 border-b">
+                    <CardTitle className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#f1765b] to-[#f1638c] flex items-center justify-center">
+                            <span className="text-white text-sm font-bold">{currentStep + 1}</span>
+                        </div>
                         {isEdit ? 'Edit Product' : 'Create New Product'}
                     </CardTitle>
                     <CardDescription>
@@ -577,7 +644,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                         }
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     <Form {...form}>
                         <form 
                             onSubmit={handleFormSubmit} 
@@ -593,7 +660,11 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                             <FormItem>
                                                 <FormLabel>Product Name *</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Enter product name" {...field} />
+                                                    <Input 
+                                                        placeholder="Enter product name" 
+                                                        {...field}
+                                                        className="focus:border-[#f1765b] focus:ring-[#f1765b]"
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -611,7 +682,8 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                                         placeholder="Enter SKU"
                                                         {...field}
                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                                                        disabled={isEdit} // Disable SKU editing in edit mode
+                                                        disabled={isEdit}
+                                                        className="focus:border-[#f1765b] focus:ring-[#f1765b]"
                                                     />
                                                 </FormControl>
                                                 <FormDescription>
@@ -630,7 +702,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                                 <FormLabel>Category *</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="focus:border-[#f1765b] focus:ring-[#f1765b]">
                                                             <SelectValue placeholder="Select a category" />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -668,6 +740,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                                             const value = parseFloat(e.target.value);
                                                             field.onChange(isNaN(value) ? 0 : value);
                                                         }}
+                                                        className="focus:border-[#f1765b] focus:ring-[#f1765b]"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -690,6 +763,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                                             const value = parseInt(e.target.value);
                                                             field.onChange(isNaN(value) ? 0 : value);
                                                         }}
+                                                        className="focus:border-[#f1765b] focus:ring-[#f1765b]"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -706,7 +780,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                                 <FormControl>
                                                     <Textarea
                                                         placeholder="Enter product description"
-                                                        className="resize-none"
+                                                        className="resize-none focus:border-[#f1765b] focus:ring-[#f1765b]"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -735,11 +809,14 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                                 {imagePreview && (
                                                     <div className="mt-2">
                                                         <p className="text-sm text-muted-foreground mb-2">Preview:</p>
-                                                        <img
-                                                            src={imagePreview}
-                                                            alt="Product preview"
-                                                            className="w-32 h-32 object-cover rounded-lg border"
-                                                        />
+                                                        <div className="relative inline-block">
+                                                            <img
+                                                                src={imagePreview}
+                                                                alt="Product preview"
+                                                                className="w-32 h-32 object-cover rounded-lg border-2 border-transparent hover:border-[#f1765b] transition-colors"
+                                                            />
+                                                            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#f1765b]/0 to-[#f1638c]/0 hover:from-[#f1765b]/10 hover:to-[#f1638c]/10 transition-all pointer-events-none" />
+                                                        </div>
                                                     </div>
                                                 )}
                                                 <FormMessage />
@@ -751,7 +828,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                         control={form.control}
                                         name="isActive"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 p-4 hover:border-[#f1765b]/30 transition-colors">
                                                 <div className="space-y-0.5">
                                                     <FormLabel className="text-base">Active Status</FormLabel>
                                                     <FormDescription>
@@ -777,6 +854,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                     variant="outline"
                                     onClick={prevStep}
                                     disabled={currentStep === 0}
+                                    className="hover:border-[#f1638c]/50 hover:text-[#f1638c] transition-colors"
                                 >
                                     Previous
                                 </Button>
@@ -785,6 +863,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                     <Button 
                                         type="button" 
                                         onClick={nextStep}
+                                        className="bg-gradient-to-r from-[#f1765b] to-[#f1638c] hover:shadow-lg transition-all duration-300 hover:scale-105"
                                     >
                                         Next
                                     </Button>
@@ -792,6 +871,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                     <Button 
                                         type="submit" 
                                         disabled={isSubmitting}
+                                        className="bg-gradient-to-r from-[#f1765b] to-[#f1638c] hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
                                     >
                                         {isSubmitting 
                                             ? (isEdit ? 'Updating...' : 'Creating...') 

@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function ProductCreatePage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6">A
       <div className="flex items-center space-x-4">
         <Link href="/dashboard/products">
           <Button variant="outline" size="icon">

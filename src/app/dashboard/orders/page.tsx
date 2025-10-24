@@ -38,16 +38,9 @@ export default function OrderListPage() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
-          <Button variant="outline" size="sm">
-            <Upload className="w-4 h-4 mr-2" />
-            Import
-          </Button>
+          
           <Link href="/dashboard/orders/create">
-            <Button size="sm" className="bg-[#f1765b] hover:bg-[#e0654a]">
+            <Button size="sm" className="bg-gradient-to-r from-[#f1765b] to-[#f1638c]  hover:bg-[#e0654a]">
               <Plus className="w-4 h-4 mr-2" />
               Create Order
             </Button>

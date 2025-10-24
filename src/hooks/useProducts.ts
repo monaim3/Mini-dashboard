@@ -2,14 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Product, ProductFormData } from '@/types/product';
 import { mockProducts } from '@/lib/mockData';
 
-// Add this function to manage products in local storage or state
 let productsData = [...mockProducts];
 
 export function useProducts() {
   return useQuery({
     queryKey: ['products'],
     queryFn: async (): Promise<Product[]> => {
-      // Try to get from localStorage first, then fallback to mock data
       if (typeof window !== 'undefined') {
         const stored = localStorage.getItem('products');
         if (stored) {
@@ -25,7 +23,6 @@ export function useProduct(id: string) {
   return useQuery({
     queryKey: ['product', id],
     queryFn: async (): Promise<Product | null> => {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
       
       if (typeof window !== 'undefined') {
@@ -36,7 +33,6 @@ export function useProduct(id: string) {
         }
       }
       
-      // Fallback to mock data
       return productsData.find(p => p.id === id) || null;
     },
     enabled: !!id,
@@ -48,7 +44,6 @@ export function useCreateProduct() {
 
   return useMutation({
     mutationFn: async (productData: ProductFormData): Promise<Product> => {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const newProduct: Product = {
@@ -56,7 +51,6 @@ export function useCreateProduct() {
         ...productData,
         createdAt: new Date(),
         updatedAt: new Date(),
-        // Add mock data for the indicators
         salesData: {
           last7Days: [Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50)],
           totalSales: Math.floor(Math.random() * 200)
@@ -77,7 +71,6 @@ export function useCreateProduct() {
       return newProduct;
     },
     onSuccess: () => {
-      // Invalidate and refetch products query
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
   });
@@ -90,7 +83,6 @@ export function useUpdateProduct() {
     mutationFn: async ({ id, ...productData }: ProductFormData & { id: string }): Promise<Product> => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Get existing product to preserve createdAt
       let existingProduct: Product | undefined;
       
       if (typeof window !== 'undefined') {
@@ -106,7 +98,7 @@ export function useUpdateProduct() {
       const updatedProduct: Product = {
         id,
         ...productData,
-        createdAt: existingProduct?.createdAt || new Date(), // Preserve original createdAt
+        createdAt: existingProduct?.createdAt || new Date(), 
         updatedAt: new Date(),
         salesData: existingProduct?.salesData || {
           last7Days: [Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50), Math.floor(Math.random() * 50)],
@@ -116,7 +108,6 @@ export function useUpdateProduct() {
         clientSatisfaction: existingProduct?.clientSatisfaction || Math.floor(Math.random() * 5) + 1
       };
 
-      // Update local storage (same as before)
       if (typeof window !== 'undefined') {
         const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
         const updatedProducts = existingProducts.map((p: Product) => 
@@ -145,7 +136,6 @@ export function useDeleteProduct() {
     mutationFn: async (productId: string) => {
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Update local storage
       if (typeof window !== 'undefined') {
         const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
         const updatedProducts = existingProducts.filter((p: Product) => p.id !== productId);
