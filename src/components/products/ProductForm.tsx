@@ -22,8 +22,8 @@ import { Check } from 'lucide-react';
 const CATEGORIES = ['Electronics', 'Furniture', 'Clothing', 'Books', 'Sports', 'Beauty'];
 
 interface ProductFormProps {
-  mode: 'create' | 'edit';
-  product?: Product;
+    mode: 'create' | 'edit';
+    product?: Product;
 }
 
 export function ProductForm({ mode, product }: ProductFormProps) {
@@ -126,7 +126,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Only allow submission on final step
         if (currentStep === steps.length - 1) {
             form.handleSubmit(onSubmit)(e);
@@ -136,9 +136,9 @@ export function ProductForm({ mode, product }: ProductFormProps) {
     const nextStep = async (e?: React.MouseEvent) => {
         e?.preventDefault();
         e?.stopPropagation();
-        
+
         const currentStepFields = steps[currentStep].fields;
-        
+
         if (currentStepFields.length > 0) {
             const isValid = await form.trigger(currentStepFields as any);
             if (!isValid) return;
@@ -163,20 +163,18 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                     <div key={step.title} className="flex items-center flex-1">
                         <div className="flex items-center">
                             <div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
-                                    index < currentStep
+                                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${index < currentStep
                                         ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c] text-white shadow-md'
                                         : index === currentStep
-                                        ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c] text-white shadow-lg scale-110'
-                                        : 'bg-muted text-muted-foreground'
-                                }`}
+                                            ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c] text-white shadow-lg scale-110'
+                                            : 'bg-muted text-muted-foreground'
+                                    }`}
                             >
                                 {index < currentStep ? <Check className="w-5 h-5" /> : index + 1}
                             </div>
                             <div className="ml-3">
-                                <p className={`text-sm font-semibold ${
-                                    index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
-                                }`}>
+                                <p className={`text-sm font-semibold ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
+                                    }`}>
                                     {step.title}
                                 </p>
                                 <p className="text-xs text-muted-foreground">{step.description}</p>
@@ -185,11 +183,10 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                         {index < steps.length - 1 && (
                             <div className="flex-1 mx-4">
                                 <div
-                                    className={`h-1 rounded-full transition-all duration-300 ${
-                                        index < currentStep 
-                                            ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c]' 
+                                    className={`h-1 rounded-full transition-all duration-300 ${index < currentStep
+                                            ? 'bg-gradient-to-r from-[#f1765b] to-[#f1638c]'
                                             : 'bg-muted'
-                                    }`}
+                                        }`}
                                 />
                             </div>
                         )}
@@ -206,7 +203,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                         {isEdit ? 'Edit Product' : 'Create New Product'}
                     </CardTitle>
                     <CardDescription>
-                        {isEdit 
+                        {isEdit
                             ? 'Update the product details below.'
                             : 'Fill in the product details. All fields marked with * are required.'
                         }
@@ -214,8 +211,8 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                 </CardHeader>
                 <CardContent className="pt-6">
                     <Form {...form}>
-                        <form 
-                            onSubmit={handleFormSubmit} 
+                        <form
+                            onSubmit={handleFormSubmit}
                             className="space-y-6"
                         >
                             {/* Step 1: Basic Info */}
@@ -228,8 +225,8 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                             <FormItem>
                                                 <FormLabel>Product Name *</FormLabel>
                                                 <FormControl>
-                                                    <Input 
-                                                        placeholder="Enter product name" 
+                                                    <Input
+                                                        placeholder="Enter product name"
                                                         {...field}
                                                         className="focus:border-[#f1765b] focus:ring-[#f1765b]"
                                                     />
@@ -369,7 +366,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                             <FormItem>
                                                 <FormLabel>Product Image</FormLabel>
                                                 <FormControl>
-                                                    <FileUpload 
+                                                    <FileUpload
                                                         onFileUpload={handleImageUpload}
                                                         value={field.value}
                                                     />
@@ -428,21 +425,21 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                                 </Button>
 
                                 {currentStep < steps.length - 1 ? (
-                                    <Button 
-                                        type="button" 
+                                    <Button
+                                        type="button"
                                         onClick={nextStep}
                                         className="bg-gradient-to-r from-[#f1765b] to-[#f1638c] hover:shadow-lg transition-all duration-300 hover:scale-105"
                                     >
                                         Next
                                     </Button>
                                 ) : (
-                                    <Button 
-                                        type="submit" 
+                                    <Button
+                                        type="submit"
                                         disabled={isSubmitting}
                                         className="bg-gradient-to-r from-[#f1765b] to-[#f1638c] hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
                                     >
-                                        {isSubmitting 
-                                            ? (isEdit ? 'Updating...' : 'Creating...') 
+                                        {isSubmitting
+                                            ? (isEdit ? 'Updating...' : 'Creating...')
                                             : (isEdit ? 'Update Product' : 'Create Product')
                                         }
                                     </Button>

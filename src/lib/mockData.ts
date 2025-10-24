@@ -59,7 +59,7 @@ export const mockProducts: Product[] = [
     deliveryProgress: 95,
     clientSatisfaction: 5
   },
-  // Add more mock products as needed
+ 
 ];
 
 

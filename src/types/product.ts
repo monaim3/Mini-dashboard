@@ -18,5 +18,5 @@ export interface Product {
   clientSatisfaction?: number;
 }
 
-// For form operations, we don't include the analytics data
+
 export type ProductFormData = Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'salesData' | 'deliveryProgress' | 'clientSatisfaction'>;

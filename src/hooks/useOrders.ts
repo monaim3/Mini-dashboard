@@ -68,7 +68,7 @@ export function useCreateOrder() {
     },
   });
 }
-// Add this to your existing useOrders.ts file
+
 
 export function useUpdateOrder() {
   const queryClient = useQueryClient();
@@ -77,7 +77,6 @@ export function useUpdateOrder() {
     mutationFn: async ({ id, ...orderData }: OrderFormData & { id: string }): Promise<Order> => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Get existing order to preserve some fields
       let existingOrder: Order | undefined;
       
       if (typeof window !== 'undefined') {
